@@ -1,10 +1,10 @@
 import { Category } from "src/category/entities/category.entity";
 import { User } from "src/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Problem {
-    @PrimaryColumn({name: 'transaction_id'})
+    @PrimaryGeneratedColumn({name: 'problem_id'})
     id: number
 
     @Column()
@@ -27,12 +27,14 @@ export class Problem {
     user: User
 
 
-    @ManyToOne(()=>Category, (category)=>category)
+    @ManyToOne(()=>Category, (category)=>category.problems)
     @JoinColumn({name: 'category_id'})
     category: Category
 
 
-    @OneToMany(()=>Problem, (problem)=>problem.parent)
+    @OneToMany(()=>Problem, (problem)=>problem.parent, {
+        onDelete: 'SET NULL'
+    })
     descendants: Problem[]
 
     @ManyToOne(()=>Problem, (parent)=>parent.descendants)
