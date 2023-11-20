@@ -32,14 +32,15 @@ export class Problem {
     category: Category
 
 
-    @OneToMany(()=>Problem, (problem)=>problem.parent, {
-        onDelete: 'SET NULL'
-    })
+    @OneToMany(()=>Problem, (problem)=>problem.parent)
     descendants: Problem[]
 
-    @ManyToOne(()=>Problem, (parent)=>parent.descendants)
+    @ManyToOne(()=>Problem, (parent)=>parent.descendants, {nullable: true})
     @JoinColumn({name: 'parent_id'})
-    parent: Problem
+    
+    parent: Problem | null;
+
+    
 
 
 }

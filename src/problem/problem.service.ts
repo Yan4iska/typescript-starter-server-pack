@@ -1,26 +1,99 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProblemDto } from './dto/create-problem.dto';
 import { UpdateProblemDto } from './dto/update-problem.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Problem } from './entities/problem.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProblemService {
-  create(createProblemDto: CreateProblemDto) {
-    return 'This action adds a new problem';
+  constructor(
+    @InjectRepository(Problem)
+    private readonly problemRepository: Repository<Problem>,
+  ){}
+
+  async create(createProblemDto: CreateProblemDto, id: number) {
+    const newProblem = {
+      title: createProblemDto.title,
+      content: createProblemDto.content,
+      category: {id: +createProblemDto.category},
+      user: {id: id},
+      parent: createProblemDto.parent? {id: +createProblemDto.parent} : null,
+      
+    }
+
+    if(!newProblem)
+      throw new BadRequestException('Something went wrong...')
+    return await this.problemRepository.save(newProblem)
   }
 
-  findAll() {
-    return `This action returns all problem`;
+  
+
+  async findAll(id: number) {
+    return await this.problemRepository.find({
+      where: {
+        user: {id:id},
+      },
+      relations:{
+        parent: true
+      },
+      order:{
+        createdAt: 'DESC',
+      }
+    })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} problem`;
+  async findOne(id: number) {
+    const problem =  await this.problemRepository.findOne({
+      where:{
+        id:id,
+      },
+      relations:{
+        parent: true
+      }
+    });
+    if(!problem) throw new NotFoundException('Problem not found!')
+    return problem
   }
 
-  update(id: number, updateProblemDto: UpdateProblemDto) {
-    return `This action updates a #${id} problem`;
+  async update(id: number, updateProblemDto: UpdateProblemDto) {
+    const problem = await this.problemRepository.findOne({
+      where:{
+        id:id,
+      },
+    })
+    if(!problem) throw new NotFoundException('Problem not found!')
+
+    return await this.problemRepository.update(id, updateProblemDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} problem`;
+  async remove(id: number) {
+    const problem = await this.problemRepository.findOne({
+      where:{
+        id:id,
+      },
+    })
+    if(!problem) throw new NotFoundException('Problem not found!')
+    return await this.problemRepository.delete(id)
+  }
+
+  async findAllWithPagination(id: number, page: number, limit:number){
+    const problems = await this.problemRepository.find({
+      where: {
+        user: {id:id}
+      },
+      relations:{
+        parent: true,
+        category: true,
+        user: true
+      },
+      order: {
+        createdAt: 'DESC'
+      },
+      take: limit,
+      skip: (page-1)*limit
+    })
+
+    return problems
   }
 }
