@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProblemModule } from './problem/problem.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CaseModule } from './case/case.module';
 
 @Module({
   imports: [
@@ -28,7 +29,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         entities: [__dirname + '/**/*.entity{.js, .ts}']
       }),
       inject: [ConfigService],
-    })
+    }),
+    CaseModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

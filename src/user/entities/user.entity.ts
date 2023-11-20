@@ -1,3 +1,4 @@
+import { Case } from "src/case/entities/case.entity"
 import { Category } from "src/category/entities/category.entity"
 import { Problem } from "src/problem/entities/problem.entity"
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
@@ -28,4 +29,9 @@ export class User {
 
     @OneToMany(()=>Problem, (problem)=> problem.user)
     problems: Problem[]
+
+    @OneToMany(() => Case, (tcase) => tcase.user,{
+        onDelete: 'CASCADE',
+    })
+    cases: Case[]
 }

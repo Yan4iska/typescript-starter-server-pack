@@ -1,3 +1,4 @@
+import { Case } from "src/case/entities/case.entity";
 import { Category } from "src/category/entities/category.entity";
 import { User } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
@@ -37,10 +38,12 @@ export class Problem {
 
     @ManyToOne(()=>Problem, (parent)=>parent.descendants, {nullable: true})
     @JoinColumn({name: 'parent_id'})
-    
     parent: Problem | null;
 
-    
+
+    @ManyToOne(()=>Case, (tcase)=>tcase.problems)
+    @JoinColumn({name: 'case_id'})
+    case: Case
 
 
 }
