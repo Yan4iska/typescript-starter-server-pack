@@ -17,6 +17,7 @@ export class ProblemService {
       title: createProblemDto.title,
       content: createProblemDto.content,
       category: {id: +createProblemDto.category},
+      case: {id: +createProblemDto.case},
       user: {id: id},
       parent: createProblemDto.parent? {id: +createProblemDto.parent} : null,
       
@@ -85,6 +86,7 @@ export class ProblemService {
       relations:{
         parent: true,
         category: true,
+        case: true,
         user: true
       },
       order: {
