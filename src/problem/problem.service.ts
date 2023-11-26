@@ -98,4 +98,21 @@ export class ProblemService {
 
     return problems
   }
+
+  async findAllByCaseId(id: number, caseId: number){
+    if (caseId === -1) {
+      throw new BadRequestException("need a caseId reques param")
+    }
+    const problems = await this.problemRepository.find({
+      where:{
+        user: {id},
+        case: {id:caseId},
+        parent: null
+      }
+    })
+    
+    return problems
+  }
 }
+
+

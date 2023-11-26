@@ -4,11 +4,18 @@ import { CreateProblemDto } from './dto/create-problem.dto';
 import { UpdateProblemDto } from './dto/update-problem.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+
 @Controller('problem')
 export class ProblemController {
   constructor(private readonly problemService: ProblemService) {}
 
   // url/problems/pagination?page=1&limit=3
+  @Get('byCase')
+  @UseGuards(JwtAuthGuard)
+  findAllByCaseId(@Req() req, @Query('caseId') caseId: number = -1) {
+    return this.problemService.findAllByCaseId(+req.user.id, caseId);
+  }
+
   @Get('pagination')
   @UseGuards(JwtAuthGuard)
   findAllWithPagination(@Req() req, @Query('page') page: number = 1, @Query('limit') limit: number = 3){
@@ -27,6 +34,7 @@ export class ProblemController {
   findAll(@Req() req) {
     return this.problemService.findAll(+req.user.id);
   }
+
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
